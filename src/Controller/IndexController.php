@@ -69,6 +69,21 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
         return $posts;
     }
 
+    private function getFooterLinks() : array {
+        $footer = array();
+        $path_config = realpath($this->DATA_PATH.DIRECTORY_SEPARATOR.'flatly/config.json');
+        if (!file_exists($path_config)) {
+            $config = [];
+        } else {
+            $config = json_decode(file_get_contents($path_config), true);
+        }
+
+        $footer['imprint'] = $config['imprint'];
+        $footer['privacy'] = $config['privacy'];
+
+        return $footer;
+    }
+
 
     #[Route(path: '/', name: 'index')]
     public function showIndex(Request $request): Response
@@ -76,22 +91,30 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
 
         (new DataController())->generateData($this->DATA_PATH);
 
-        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'posts' => $this->getPosts(), 'nav' => $this->getNavigationArray()]);
+        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'footer' => $this->getFooterLinks(), 'posts' => $this->getPosts(), 'nav' => $this->getNavigationArray()]);
     }
 
+    #[Route(path: '/generate')]
+    public function forceGenerateData(Request $request) :Response
+    {
+        (new DataController())->generateData($this->DATA_PATH, true);
+        return $this->redirectToRoute('index');
+    }
 
     #[Route(path: '/tag/{tag}', name: 'tag')]
     public function showBlogListByTag(Request $request): Response
     {
-        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'posts' => $this->getPosts($request->attributes->get('tag', '')), 'nav' => $this->getNavigationArray()]);
+        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'footer' => $this->getFooterLinks(),'posts' => $this->getPosts($request->attributes->get('tag', '')), 'nav' => $this->getNavigationArray()]);
     }
 
     #[Route(path: '/{slug}', name: 'content', requirements: ['slug' => '.+'])]
     public function showContent(Request $request): Response
     {
         $data = $this->getContentFromFile($request->attributes->get('slug'));
-        return $this->render('base.html.twig', array_merge($data, ['body' => $data['parsed'], 'nav' => $this->getNavigationArray()]));
+        return $this->render('base.html.twig', array_merge($data, ['body' => $data['parsed'], 'footer' => $this->getFooterLinks(),'nav' => $this->getNavigationArray()]));
     }
+
+
 
 
 }

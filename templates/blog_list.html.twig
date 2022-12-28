@@ -1,4 +1,9 @@
 <h2>Aktuelle Artikel</h2>
+
+{%  if posts|length == 0 %}
+Leider wurden keine Artikel gefunden :(
+{% endif %}
+
 {% for post in posts %}
     <p>
         <a href="{{ path('content', {slug: post.slug}) }}">{{ post.date|date("d.m.Y") }}: {{ post.title }}</a> <br/>
