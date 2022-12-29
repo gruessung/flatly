@@ -1,0 +1,28 @@
+<script type="application/ld+json">
+{{ recipe_raw | raw }}
+</script>
+
+<div class="card bg-secondary" >
+    <div class="card-body">
+        <h5 class="card-title">{{ recipe.name }}</h5>
+        <h6 class="card-subtitle mb-2 ">{{ recipe.description }}</h6>
+    </div>
+    <div class="card-header">
+        Zutaten
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for item in recipe.recipeIngredient %}
+            <li class="list-group-item">{{ item }}</li>
+        {% endfor %}
+    </ul>
+
+
+    <div class="card-header">
+        Zubereitung
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for item in recipe.recipeInstructions %}
+            <li class="list-group-item"><strong>{{ item.name }}</strong><br />{{ item.text }}</li>
+        {% endfor %}
+    </ul>
+</div>

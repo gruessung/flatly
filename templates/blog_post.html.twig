@@ -1,5 +1,17 @@
 <h1>{{ title }}</h1>
 
+{% if tags is defined %}
+    {% for tag in tags %}
+        <a href="{{ path('tag', {tag: tag}) }}"><span class="badge text-bg-primary">#{{ tag }}</span></a>
+    {% endfor %}
+{% endif %}
+
 <p>
-{{ body | raw }}
+    {{ body | raw }}
+
+    {% if render_type is defined %}
+        {% if render_type == "recipe" %}
+            {% include 'recipe.html.twig' %}
+        {% endif %}
+    {% endif %}
 </p>

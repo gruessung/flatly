@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  flatly:
+    ports:
+      - '8094:80'
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public # do not change
+    volumes:
+      - '/home/alexander/solardorf/:/data/'
+    build: .

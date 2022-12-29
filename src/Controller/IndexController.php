@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Recipe;
 use Mni\FrontYAML\Parser;
 use Parsedown;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -91,6 +95,9 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
 
         (new DataController())->generateData($this->DATA_PATH);
 
+
+
+
         return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'footer' => $this->getFooterLinks(), 'posts' => $this->getPosts(), 'nav' => $this->getNavigationArray()]);
     }
 
@@ -111,6 +118,18 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
     public function showContent(Request $request): Response
     {
         $data = $this->getContentFromFile($request->attributes->get('slug'));
+
+        //Block für Rezeptdateien
+        if (isset($data['meta']['render_type']) && $data['meta']['render_type'] == "recipe" && isset($data['meta']['recipe'])) {
+            $encoders = [new JsonEncoder()];
+            $normalizers = [new ObjectNormalizer()];
+            $serializer = new Serializer($normalizers, $encoders);
+            $data['recipe_raw'] = json_encode($data['meta']['recipe']);
+            $data['recipe'] = $serializer->deserialize(json_encode($data['meta']['recipe']), Recipe::class, 'json');
+        }
+
+
+
         return $this->render('base.html.twig', array_merge($data, ['body' => $data['parsed'], 'footer' => $this->getFooterLinks(),'nav' => $this->getNavigationArray()]));
     }
 
