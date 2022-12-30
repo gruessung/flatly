@@ -73,19 +73,23 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
         return $posts;
     }
 
-    private function getFooterLinks() : array {
-        $footer = array();
+    /**
+     * @throws \Exception
+     */
+    private function getTemplateDataFromConfig() : array {
+        $data = array();
         $path_config = realpath($this->DATA_PATH.DIRECTORY_SEPARATOR.'flatly/config.json');
         if (!file_exists($path_config)) {
-            $config = [];
+            throw new \Exception('config.json not found');
         } else {
             $config = json_decode(file_get_contents($path_config), true);
         }
 
-        $footer['imprint'] = $config['imprint'];
-        $footer['privacy'] = $config['privacy'];
+        $data['imprint'] = $config['imprint'];
+        $data['privacy'] = $config['privacy'];
+        $data['title'] = $config['title'];
 
-        return $footer;
+        return $data;
     }
 
 
@@ -98,7 +102,7 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
 
 
 
-        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'footer' => $this->getFooterLinks(), 'posts' => $this->getPosts(), 'nav' => $this->getNavigationArray()]);
+        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'config' => $this->getTemplateDataFromConfig(), 'posts' => $this->getPosts(), 'nav' => $this->getNavigationArray()]);
     }
 
     #[Route(path: '/generate')]
@@ -111,7 +115,7 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
     #[Route(path: '/tag/{tag}', name: 'tag')]
     public function showBlogListByTag(Request $request): Response
     {
-        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'footer' => $this->getFooterLinks(),'posts' => $this->getPosts($request->attributes->get('tag', '')), 'nav' => $this->getNavigationArray()]);
+        return $this->render('base.html.twig', ['body' => '', 'site_type' => 'blog_list', 'config' => $this->getTemplateDataFromConfig(),'posts' => $this->getPosts($request->attributes->get('tag', '')), 'nav' => $this->getNavigationArray()]);
     }
 
     #[Route(path: '/{slug}', name: 'content', requirements: ['slug' => '.+'])]
@@ -130,7 +134,7 @@ class IndexController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstrac
 
 
 
-        return $this->render('base.html.twig', array_merge($data, ['body' => $data['parsed'], 'footer' => $this->getFooterLinks(),'nav' => $this->getNavigationArray()]));
+        return $this->render('base.html.twig', array_merge($data, ['body' => $data['parsed'], 'config' => $this->getTemplateDataFromConfig(),'nav' => $this->getNavigationArray()]));
     }
 
 
