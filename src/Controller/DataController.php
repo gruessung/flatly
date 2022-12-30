@@ -25,11 +25,15 @@ class DataController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstract
         $per_site_type = array();
         $per_site_type['blog_posts'] = [];
         $front_yaml = new Parser();
-       // dd($data);
+
         foreach($data as $e) {
             if (is_dir($e)) continue;
             $document = $front_yaml->parse(file_get_contents($e));
             if(!isset($document->getYAML()['slug'])) continue;
+            if(empty($document->getYAML()['slug'])) continue;
+           # var_dump($e);
+           # var_dump($document->getYAML()['draft']);
+            if(isset($document->getYAML()['draft']) && $document->getYAML()['draft']) continue;
             if (isset($document->getYAML()['nav_visibility']) && isset($document->getYAML()['title'])) {
                 $weight = (isset($document->getYAML()['nav_weight'])) ? $document->getYAML()['nav_weight'] : 0;
                 $nav[] = [
@@ -47,6 +51,8 @@ class DataController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstract
             $slug_to_file[$document->getYAML()['slug']] = str_replace(realpath($DATA_PATH.'/content'), '',$e);
 
         }
+
+      #  dd();
 
         file_put_contents($DATA_PATH.'/flatly/slug-to-file.json', json_encode($slug_to_file));
         file_put_contents($DATA_PATH.'/flatly/nav.json', json_encode($nav));
