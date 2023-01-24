@@ -13,6 +13,7 @@ You have to provide your content on the file system with Markdown and some Front
 Flatly is based on PHP8, Symfony and Twig. You can easily customize the default template in the template folder.
 
 ## docker-compose example quick-start
+[![Docker](https://github.com/gruessung/flatly/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/gruessung/flatly/actions/workflows/docker-publish.yml)
 ```
 version: '3.3'
 services:
