@@ -30,5 +30,14 @@ services:
 
 ## example config.json
 ```
-todo
+{
+  "title": "website title",
+  "index_site_type": "blog_list",
+  "blog_list": {
+    "items_per_page": 10
+  },
+  "cnt_content_files": 12,
+  "imprint": "hlink to imprint",
+  "privacy": "link to privacy"
+}
 ```
